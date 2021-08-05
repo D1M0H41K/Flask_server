@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <meta charset="UTF-8">
+    <title>TODO list</title>
+</head>
+<body>
+<div class="outer">
+    <div class="header">
+        <b>TODO LIST</b><hr>
+    </div>
+    {% for todo in todo_list %}
+        <div class="object">
+            {% if todo.done %}<b>Done!</b>{% else %}<b>Yet to Complete!</b>{% endif %}
+            <p>#{{ todo.id }} {{ todo.task }}</p>
+            <p>{{ todo.date }}</p>
+        </div>
+    {% endfor %}
+    <div class="add">
+        <form action="todo" method="post">
+            <p>Enter task to add task:</p>
+            <label>
+                <input type="text" name="task">
+            </label>
+            <input type="submit" value="submit">
+        </form>
+    </div>
+    <div class="mark-complete">
+        <form action="todo" method="post">
+            <p>Enter task number to change completion:</p>
+            <label>
+                <input type="text" name="id">
+                <input type="checkbox" name="done">
+            </label>
+            <input type="submit" value="submit">
+        </form>
+    </div>
+</div>
+</body>
+</html>
