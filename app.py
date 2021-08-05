@@ -19,13 +19,16 @@ todo_list = [todo_object("Buy eggs"), todo_object("Bake bread")]
 
 
 def update_todo_list(data):
-    if 'task' in data:
-        todo_list.append(todo_object(data.get('task')))
-    elif 'id' in data:
-        if 'done' in data:
-            todo_list[int(data.get('id'))].done = True
-        else:
-            todo_list[int(data.get('id'))].done = False
+    try:
+        if 'task' in data and data.get('task') != '':
+            todo_list.append(todo_object(data.get('task')))
+        elif 'id' in data and data.get('id') != '' and int(data.get('id')) < len(todo_list):
+            if 'done' in data:
+                todo_list[int(data.get('id'))].done = True
+            else:
+                todo_list[int(data.get('id'))].done = False
+    except:
+        return
 
 
 @app.route('/')
@@ -39,7 +42,7 @@ def todo_main():
         update_todo_list(request.form)
         return render_template('todo.html', todo_list=sorted(todo_list, key=lambda todo: todo.date, reverse=True))
     else:
-        return render_template('todo.html', todo_list=todo_list)
+        return render_template('todo.html', todo_list=sorted(todo_list, key=lambda todo: todo.date, reverse=True))
 
 
 if __name__ == '__main__':
