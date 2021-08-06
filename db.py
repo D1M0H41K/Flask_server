@@ -9,7 +9,7 @@ data_file = "todo_list.json"
 
 
 class Todo:
-    _id = 0
+    _id = 1
 
     def __init__(self, task, done=False, date=None, task_id=0):
         self.task = task
@@ -33,7 +33,7 @@ def from_json(json_object):
                     json_object['done'],
                     datetime.datetime.fromisoformat(json_object['date']),
                     json_object['id'])
-    except KeyError:
+    except KeyError and ValueError:
         return
 
 

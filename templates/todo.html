@@ -14,9 +14,11 @@
     <div class="object-holder">
 
         <div class="object-left">
-            <form action="todo" method="post">
-                <input type="text" hidden name="id" value="{{ todo.id }}">
+            <form action="todo/{{ todo.id }}/update" method="post">
                 <input type="submit" name="done" value="{% if todo.done %}Uncomplete{% else %}Complete{% endif %}">
+            </form>
+
+            <form action="todo/{{ todo.id }}/delete" method="post">
                 <input type="submit" name="delete" value="delete">
             </form>
         </div>
