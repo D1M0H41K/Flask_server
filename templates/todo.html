@@ -11,27 +11,28 @@
         <b>TODO LIST</b><hr>
     </div>
     {% for todo in todo_list %}
+    <div class="object-holder">
+
+        <div class="object-left">
+            <form action="todo" method="post">
+                <input type="text" hidden name="id" value="{{ todo.id }}">
+                <input type="submit" name="done" value="{% if todo.done %}Uncomplete{% else %}Complete{% endif %}">
+            </form>
+        </div>
+
         <div class="object">
             {% if todo.done %}<b>Done!</b>{% else %}<b>Yet to Complete!</b>{% endif %}
-            <p>#{{ todo.id }} {{ todo.task }}</p>
+            <p>{{ todo.task }}</p>
             <p>{{ todo.date }}</p>
         </div>
+
+    </div>
     {% endfor %}
     <div class="add">
         <form action="todo" method="post">
             <p>Enter task to add task:</p>
             <label>
                 <input type="text" name="task">
-            </label>
-            <input type="submit" value="submit">
-        </form>
-    </div>
-    <div class="mark-complete">
-        <form action="todo" method="post">
-            <p>Enter task number to change completion:</p>
-            <label>
-                <input type="text" name="id">
-                <input type="checkbox" name="done">
             </label>
             <input type="submit" value="submit">
         </form>
