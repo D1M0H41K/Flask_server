@@ -9,12 +9,9 @@ def update_todo_list(data, todo_list):
         if 'task' in data and data.get('task') != '':
             todo_list.append(Todo(data.get('task')))
         elif 'id' in data and data.get('id') != '':
-            done = False
-            if 'done' in data:
-                done = True
             for todo_task in todo_list:
                 if todo_task.id == int(data.get('id')):
-                    todo_task.done = done
+                    todo_task.done = not todo_task.done
                     break
     except ValueError:
         return

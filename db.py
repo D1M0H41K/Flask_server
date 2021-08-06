@@ -1,19 +1,22 @@
 import os
-import random
 
 from json import JSONEncoder, JSONDecoder
 import datetime
 
 
 data_path = "data/"
+data_file = "todo_list.json"
 
 
 class Todo:
+    _id = 0
+
     def __init__(self, task, done=False, date=None, task_id=0):
         self.task = task
         self.done = done
         self.date = date if date else datetime.datetime.now()
-        self.id = task_id if task_id else int(random.random() * 5000)  #Todo._id
+        self.id = task_id if task_id else Todo._id
+        Todo._id += self.id + 1
 
 
 class JsonEncoder(JSONEncoder):
@@ -36,7 +39,7 @@ def from_json(json_object):
 
 def read_json():
     try:
-        with open(os.path.join(data_path, "todo_list.json"), 'r') as read_file:
+        with open(os.path.join(data_path, data_file), 'r') as read_file:
             todo_list = []
             data = read_file.read()
         if data:
@@ -47,5 +50,5 @@ def read_json():
 
 
 def write_json(todo_list):
-    with open(os.path.join(data_path, "todo_list.json"), 'w') as out_file:
+    with open(os.path.join(data_path, data_file), 'w') as out_file:
         out_file.write(JsonEncoder().encode(todo_list))
