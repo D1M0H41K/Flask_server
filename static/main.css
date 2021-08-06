@@ -21,6 +21,7 @@ div.outer {
 }
 
 div.object-left {
+    margin-left: 5px;
     display: flex;
     border: 1px solid #555;
     background-color: #ece;
@@ -28,7 +29,9 @@ div.object-left {
     width: max-content;
 }
 
-div.object {
+input {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 div.object-holder {

@@ -11,7 +11,10 @@ def update_todo_list(data, todo_list):
         elif 'id' in data and data.get('id') != '':
             for todo_task in todo_list:
                 if todo_task.id == int(data.get('id')):
-                    todo_task.done = not todo_task.done
+                    if 'done' in data:
+                        todo_task.done = not todo_task.done
+                    elif 'delete' in data:
+                        todo_list.remove(todo_task)
                     break
     except ValueError:
         return
