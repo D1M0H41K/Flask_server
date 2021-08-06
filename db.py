@@ -50,5 +50,9 @@ def read_json():
 
 
 def write_json(todo_list):
-    with open(os.path.join(data_path, data_file), 'w') as out_file:
-        out_file.write(JsonEncoder().encode(todo_list))
+    try:
+        with open(os.path.join(data_path, data_file), 'w+') as out_file:
+            out_file.write(JsonEncoder().encode(todo_list))
+    except FileNotFoundError:
+        os.mkdir(data_path)
+        write_json(todo_list)
