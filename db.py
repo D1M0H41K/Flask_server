@@ -4,7 +4,7 @@ from json import JSONEncoder, JSONDecoder
 import datetime
 
 
-data_path = "data/"
+data_path = "data"
 data_file = "todo_list.json"
 
 
