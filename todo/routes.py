@@ -1,5 +1,3 @@
-import os
-
 from flask import request, render_template, redirect, session
 
 from . import app
@@ -35,7 +33,6 @@ def hello_world():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_main():
-    app.config['SECRET_KEY'] = os.urandom(16)
     if request.method == 'POST':
         session['user_data'] = get_user_data(request.form)
         if session['user_data']:
