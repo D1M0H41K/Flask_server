@@ -1,58 +1,39 @@
-import os
-
-from json import JSONEncoder, JSONDecoder
+from app import db
 import datetime
 
 
-data_path = "data"
-data_file = "todo_list.json"
+class Todo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.String(120))
+    done = db.Column(db.Boolean)
+    date = db.Column(db.DateTime)
 
-
-class Todo:
-    _id = 1
-
-    def __init__(self, task, done=False, date=None, task_id=0):
+    def __init__(self, task):
         self.task = task
-        self.done = done
-        self.date = date if date else datetime.datetime.now()
-        self.id = task_id if task_id else Todo._id
-        Todo._id += self.id + 1
+        self.done = False
+        self.date = datetime.datetime.now()
 
 
-class JsonEncoder(JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime.datetime):
-            return str(o.isoformat())
-        else:
-            return o.__dict__
+db.create_all()
 
 
-def from_json(json_object):
-    try:
-        return Todo(json_object['task'],
-                    json_object['done'],
-                    datetime.datetime.fromisoformat(json_object['date']),
-                    json_object['id'])
-    except KeyError and ValueError:
-        return
+def add_todo_to_db(todo_task):
+    db.session.add(todo_task)
+    db.session.commit()
 
 
-def read_json():
-    try:
-        with open(os.path.join(data_path, data_file), 'r') as read_file:
-            todo_list = []
-            data = read_file.read()
-        if data:
-            todo_list = JSONDecoder(object_hook=from_json).decode(data)
-        return todo_list
-    except FileNotFoundError:
-        return []
+def get_todo_by_id(todo_id):
+    return Todo.query.filter_by(id=todo_id).first()
 
 
-def write_json(todo_list):
-    try:
-        with open(os.path.join(data_path, data_file), 'w+') as out_file:
-            out_file.write(JsonEncoder().encode(todo_list))
-    except FileNotFoundError:
-        os.mkdir(data_path)
-        write_json(todo_list)
+def commit_db_changes():
+    db.session.commit()
+
+
+def remove_todo_by_id(todo_id):
+    db.session.delete(get_todo_by_id(todo_id))
+    db.session.commit()
+
+
+def get_todo_list():
+    return Todo.query.all()
