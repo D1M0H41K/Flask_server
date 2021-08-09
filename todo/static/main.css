@@ -21,18 +21,21 @@ div.outer {
 }
 
 div.object-left {
+    margin-left: 5px;
+    display: flex;
     border: 1px solid #555;
     background-color: #ece;
     text-align: center;
-    float: left;
-    width: 100px;
+    width: max-content;
 }
 
-div.object {
-    float: left;
+input {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 div.object-holder {
+    display: flex;
     overflow: hidden;
     padding-left: 10px;
     padding-bottom: 5px;
@@ -47,8 +50,8 @@ div.object > p {
 }
 
 form {
-    top: 0;
-    bottom: 0;
+    display: inherit;
     border: 1px solid #ccc;
     padding: 5px;
+    width: max-content;
 }
