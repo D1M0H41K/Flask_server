@@ -9,11 +9,17 @@ class Todo(db.Model):
     task = db.Column(db.String(120))
     done = db.Column(db.Boolean)
     date = db.Column(db.DateTime)
+    email = db.Column(db.String)
 
-    def __init__(self, task):
+    def __init__(self, task, user_email):
         self.task = task
         self.done = False
         self.date = datetime.datetime.now()
+        self.email = user_email
+
+
+# db.drop_all()
+# db.create_all()
 
 
 def add_todo_to_db(todo_task):
@@ -34,5 +40,5 @@ def remove_todo_by_id(todo_id):
     db.session.commit()
 
 
-def get_todo_list():
-    return Todo.query.order_by(desc(Todo.date)).all()
+def get_todo_list(user_email):
+    return Todo.query.order_by(desc(Todo.date)).filter_by(email=user_email)
