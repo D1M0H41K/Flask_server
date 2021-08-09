@@ -1,5 +1,6 @@
-from app import db
 import datetime
+
+from . import db
 
 
 class Todo(db.Model):
