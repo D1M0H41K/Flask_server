@@ -33,7 +33,7 @@ def todo_main():
         return redirect('/todo')
     else:
         todo_list = get_todo_list()
-        return render_template('todo.html', todo_list=sorted(todo_list, key=lambda todo: todo.date, reverse=True))
+        return render_template('todo.html', todo_list=todo_list)
 
 
 @app.route('/todo/<todo_id>/update', methods=['POST'])

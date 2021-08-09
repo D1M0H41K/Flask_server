@@ -1,6 +1,7 @@
 import datetime
 
-from . import db
+from sqlalchemy import desc
+from . import db, app
 
 
 class Todo(db.Model):
@@ -13,9 +14,6 @@ class Todo(db.Model):
         self.task = task
         self.done = False
         self.date = datetime.datetime.now()
-
-
-db.create_all()
 
 
 def add_todo_to_db(todo_task):
@@ -37,4 +35,4 @@ def remove_todo_by_id(todo_id):
 
 
 def get_todo_list():
-    return Todo.query.all()
+    return Todo.query.order_by(desc(Todo.date)).all()
