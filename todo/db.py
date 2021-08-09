@@ -1,7 +1,7 @@
 import datetime
 
 from sqlalchemy import desc
-from . import db, app
+from . import db
 
 
 class Todo(db.Model):
