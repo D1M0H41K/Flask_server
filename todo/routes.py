@@ -1,13 +1,7 @@
-from flask import Flask, request, render_template, redirect
-from flask_sqlalchemy import SQLAlchemy
+from flask import request, render_template, redirect
 
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/todo.db'
-db = SQLAlchemy(app)
-
-
-from db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id,\
+from . import app
+from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list
 
 
@@ -52,8 +46,3 @@ def todo_update(todo_id=None):
 def todo_remove(todo_id=None):
     remove_todo_db(int(todo_id))
     return redirect('/todo')
-
-
-if __name__ == '__main__':
-    app.run()
-
