@@ -2,17 +2,12 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 
-try:
-    os.environ['DATABASE_URL'] is None
-except KeyError:
-    os.environ['DATABASE_URL'] = 'sqlite:////tmp/todo.db'
 
+load_dotenv()
 app = Flask(__name__)
-if 'postgres' in os.environ['DATABASE_URL']:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL'].replace('postgres', 'postgresql')
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL'].replace('postgres', 'postgresql')
 
 db = SQLAlchemy(app)
 
