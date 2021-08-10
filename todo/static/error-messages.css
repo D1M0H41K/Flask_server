@@ -4,8 +4,8 @@ div.error {
     bottom: 0;
     right: 0;
     left: 0;
-    position: absolute;
-    max-height: 10%;
+    position: fixed;
+    min-height: 3em;
     text-align: center;
 }
 

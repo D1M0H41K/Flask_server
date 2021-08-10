@@ -12,6 +12,10 @@ div.register-holder {
 }
 
 div.register {
+    border-left: #999 10px solid;
+    border-right: #999 10px solid;
+    border-top: #888 10px solid;
+    border-bottom: #888 15px solid;
     flex-direction: column;
     display: inherit;
     background-color: #bbb;

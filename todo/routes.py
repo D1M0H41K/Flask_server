@@ -1,9 +1,12 @@
+import os
+
 from flask import request, render_template, redirect, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import app
 from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list, User, add_user_to_db, get_user_by_login, \
-    get_user_by_email
+    get_user_by_email, RegistrationForm, LogInForm
 
 
 def remove_todo_db(todo_id):
@@ -12,7 +15,7 @@ def remove_todo_db(todo_id):
 
 def add_todo_db(data):
     if 'task' in data and data.get('task') != '':
-        add_todo_to_db(Todo(data.get('task'), session['user_data']))
+        add_todo_to_db(Todo(task=data.get('task'), user_id=session['user_data']))
 
 
 def update_todo_db(data, todo_id):
@@ -23,29 +26,27 @@ def update_todo_db(data, todo_id):
 
 
 def get_user_data(data):
-    if 'login' in data and 'password' in data:
-        if get_user_by_login(data.get('login')) is not None:
-            if get_user_by_login(data.get('login')).password == data.get('password'):
-                return data.get('login')
-        elif get_user_by_email(data.get('login')) is not None:  # Here login is email
-            if get_user_by_email(data.get('login')).password == data.get('password'):
-                return get_user_by_email(data.get('login')).login
-        return flash('Not correct login or password')
-    return flash('Not all text fields are filled in')
+    if get_user_by_login(data.login.data) is not None:
+        if check_password_hash(pwhash=get_user_by_login(data.login.data).password, password=data.password.data):
+            return get_user_by_login(data.login.data).id
+    elif get_user_by_email(data.login.data) is not None:  # Here login is email
+        if check_password_hash(pwhash=get_user_by_email(data.login.data).password, password=data.password.data):
+            return get_user_by_email(data.login.data).id
+    return flash('Not correct login or password')
 
 
 def register_user(data):
-    if 'login' in data and 'password' in data and 'email' in data \
-            and data.get('login') != '' and data.get('password') != '' and data.get('email') != '':
-        if get_user_by_login(data.get('login')) is None:
-            if get_user_by_email(data.get('email')) is None:
-                add_user_to_db(User(data.get('email'), data.get('login'), data.get('password')))
-            else:
-                return flash('Account with given email already exists')
+    if get_user_by_login(data.login.data) is None:
+        if get_user_by_email(data.email.data) is None:
+            add_user_to_db(User(email=data.email.data,
+                                login=data.login.data,
+                                password=generate_password_hash(password=data.password.data,
+                                                                method=os.environ['HASH_METHOD'],
+                                                                salt_length=int(os.environ['SALT_LENGTH']))))
         else:
-            return flash('Account with given login already exists')
+            return flash('Account with given email already exists')
     else:
-        return flash('Not all text fields are filled in')
+        return flash('Account with given login already exists')
 
 
 @app.route('/')
@@ -55,24 +56,32 @@ def hello_world():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_main():
+    form = LogInForm(request.form)
     if request.method == 'POST':
-        session['user_data'] = get_user_data(request.form)
+        if form.validate():
+            session['user_data'] = get_user_data(form)
+        else:
+            flash('Not correct data in fields')
         if '_flashes' in session:
             return redirect('/login')
         return redirect('/todo')
     else:
-        return render_template('login.html')
+        return render_template('login.html', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_main():
+    form = RegistrationForm(request.form)
     if request.method == 'POST':
-        register_user(request.form)
+        if form.validate():
+            register_user(form)
+        else:
+            flash('Not correct data in fields')
         if '_flashes' in session:
             return redirect('/register')
         return redirect('/login')
     else:
-        return render_template('register.html')
+        return render_template('register.html', form=form)
 
 
 @app.route('/todo', methods=['GET', 'POST'])

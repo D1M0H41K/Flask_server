@@ -1,34 +1,33 @@
-import datetime
-
-from sqlalchemy import desc
+from sqlalchemy import desc, func
+from wtforms import Form, StringField, validators, PasswordField
 from . import db
 
 
 class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True)
-    login = db.Column(db.String, primary_key=True)
+    login = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    creating_date = db.Column(db.DateTime)
+    creating_date = db.Column(db.DateTime, server_default=func.now())
 
-    def __init__(self, email, login, password):
-        self.email = email
-        self.login = login
-        self.password = password
-        self.creating_date = datetime.datetime.now()
+
+class RegistrationForm(Form):
+    email = StringField(validators=[validators.Length(min=5, max=90)])
+    login = StringField(validators=[validators.Length(min=4, max=32)])
+    password = PasswordField(validators=[validators.DataRequired()])
+
+
+class LogInForm(Form):
+    login = StringField(validators=[validators.DataRequired()])
+    password = PasswordField(validators=[validators.DataRequired()])
 
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    task = db.Column(db.String(120))
-    done = db.Column(db.Boolean)
-    date = db.Column(db.DateTime)
-    user_login = db.Column(db.String, db.ForeignKey('user.login'), nullable=False)
-
-    def __init__(self, task, login):
-        self.task = task
-        self.done = False
-        self.date = datetime.datetime.now()
-        self.user_login = login
+    task = db.Column(db.String(120), nullable=False)
+    done = db.Column(db.Boolean, server_default='false')
+    date = db.Column(db.DateTime, server_default=func.now())
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
 
 
 # db.drop_all()
@@ -66,5 +65,5 @@ def remove_todo_by_id(todo_id):
     db.session.commit()
 
 
-def get_todo_list(user_login):
-    return Todo.query.order_by(desc(Todo.date)).filter_by(user_login=user_login)
+def get_todo_list(user_id):
+    return Todo.query.order_by(desc(Todo.date)).filter_by(user_id=user_id)
