@@ -25,13 +25,13 @@ class LogInForm(Form):
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(120), nullable=False)
-    done = db.Column(db.Boolean, server_default='false')
+    done = db.Column(db.Boolean, server_default='')
     date = db.Column(db.DateTime, server_default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
-# db.drop_all()
-# db.create_all()
+db.drop_all()
+db.create_all()
 
 
 def add_user_to_db(user_data):
