@@ -1,6 +1,6 @@
 from sqlalchemy import desc, func
 from wtforms import Form, StringField, validators, PasswordField
-from . import db
+from . import db, login_manager
 
 
 class User(db.Model):
@@ -9,6 +9,27 @@ class User(db.Model):
     login = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     creating_date = db.Column(db.DateTime, server_default=func.now())
+    authenticated = db.Column(db.Boolean, server_default='0')
+
+    def is_active(self):
+        return True
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return self.authenticated
+
+    def is_anonymous(self):
+        return False
+
+    def default(self, o):
+        return str(o)
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.filter_by(id=user_id).first()
 
 
 class RegistrationForm(Form):
