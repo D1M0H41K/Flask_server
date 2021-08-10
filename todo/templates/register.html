@@ -9,16 +9,11 @@
 <body>
 <div class="register-holder">
     <div class="register">
+    {% from "_formhelpers.html" import render_input %}
     <form action="register" method="post">
-        <label>Email:
-            <input type="text" name="email" id="email">
-        </label>
-        <label>Login:
-            <input type="text" name="login" id="login">
-        </label>
-        <label>Password:
-            <input type="password" name="password" id="password">
-        </label>
+        {{ render_input(form.email) }}
+        {{ render_input(form.login) }}
+        {{ render_input(form.password) }}
         <input class="button" type="submit" value="Register">
     </form>
     <form action="login" method="get">

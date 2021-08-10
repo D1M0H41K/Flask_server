@@ -12,14 +12,14 @@ class User(db.Model):
 
 
 class RegistrationForm(Form):
-    email = StringField(validators=[validators.Length(min=5, max=90)])
-    login = StringField(validators=[validators.Length(min=4, max=32)])
-    password = PasswordField(validators=[validators.DataRequired()])
+    email = StringField(label="Email:", validators=[validators.Length(min=5, max=90)])
+    login = StringField(label="Login:", validators=[validators.Length(min=4, max=32)])
+    password = PasswordField(label="Password:", validators=[validators.DataRequired()])
 
 
 class LogInForm(Form):
-    login = StringField(validators=[validators.DataRequired()])
-    password = PasswordField(validators=[validators.DataRequired()])
+    login = StringField(label="Login:", validators=[validators.DataRequired()])
+    password = PasswordField(label="Password:", validators=[validators.DataRequired()])
 
 
 class Todo(db.Model):
