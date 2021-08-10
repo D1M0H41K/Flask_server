@@ -27,7 +27,7 @@ class Todo(db.Model):
     task = db.Column(db.String(120), nullable=False)
     done = db.Column(db.Boolean, server_default='false')
     date = db.Column(db.DateTime, server_default=func.now())
-    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
 # db.drop_all()
