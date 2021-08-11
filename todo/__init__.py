@@ -19,7 +19,6 @@ google_client_id = os.environ['GOOGLE_CLIENT_ID']
 google_client_secret = os.environ['GOOGLE_CLIENT_SECRET']
 client = WebApplicationClient(google_client_id)
 openid_config_file_name = "google_openid_configs.json"
-
 db = SQLAlchemy(app)
 
 from . import routes

@@ -11,7 +11,7 @@ from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
 
 
 def get_google_config():
-    with open(os.path.join('todo/static', openid_config_file_name), 'r') as config:
+    with open(os.path.join('todo/google_openid', openid_config_file_name), 'r') as config:
         return json.load(config)
 
 

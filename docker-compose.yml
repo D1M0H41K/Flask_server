@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_db_todo:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=flask
+      - POSTGRES_USER=flask
+      - POSTGRES_PASSWORD=gunicorn
+  web:
+    image: python-docker
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - todo:/tmp
+    environment:
+      - DATABASE_URL=postgres://flask:gunicorn@db/flask
+    command: gunicorn --forwarded-allow-ips="172.23.0.4" -b "0.0.0.0" todo:app
+    depends_on:
+      - db
+  nginx:
+    image: flask-nginx
+    depends_on:
+      - web
+volumes:
+  todo:
+
+  postgres_db_todo:

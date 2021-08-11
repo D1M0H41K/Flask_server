@@ -4,7 +4,7 @@ from wtforms import Form, StringField, validators, PasswordField
 from . import db, login_manager
 
 
-class User(UserMixin, db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True)
     login = db.Column(db.String, unique=True, nullable=False)
@@ -36,9 +36,11 @@ class Todo(db.Model):
     date = db.Column(db.DateTime, server_default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-
 # db.drop_all()
-# db.create_all()
+
+
+if not db.engine.table_names():
+    db.create_all()
 
 
 def add_user_to_db(user_data):
