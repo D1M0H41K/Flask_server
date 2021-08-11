@@ -1,12 +1,18 @@
+import json
 import os
-
+import requests
 from flask import request, render_template, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user
-from . import app, login_manager
+from . import app, login_manager, openid_config_file_name, client, google_client_id, google_client_secret
 from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list, User, add_user_to_db, get_user_by_login, \
     get_user_by_email, RegistrationForm, LogInForm
+
+
+def get_google_config():
+    with open(os.path.join('todo/static', openid_config_file_name), 'r') as config:
+        return json.load(config)
 
 
 def remove_todo_db(todo_id):
@@ -52,6 +58,51 @@ def register_user(data):
 @app.route('/')
 def hello_world():
     return redirect('/login')
+
+
+@app.route('/login/google')
+def login_google():
+    google_conf = get_google_config()
+    auth_endpoint = google_conf['authorization_endpoint']
+    request_uri = client.prepare_request_uri(
+        auth_endpoint,
+        redirect_uri=request.base_url + "/callback",
+        scope=["openid", "email", "profile"]
+    )
+    return redirect(request_uri)
+
+
+@app.route('/login/google/callback')
+def login_google_callback():
+    code = request.args.get("code")
+    google_conf = get_google_config()
+    token_endpoint = google_conf['token_endpoint']
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url,
+        code=code
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(google_client_id, google_client_secret),
+    )
+    client.parse_request_body_response(json.dumps(token_response.json()))
+
+    userinfo_endpoint = google_conf["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+    if userinfo_response.json().get("email_verified"):
+        if not get_user_by_email(userinfo_response.json()["email"]):
+            add_user_to_db(User(email=userinfo_response.json()["email"],
+                                login=userinfo_response.json()["given_name"],
+                                password='google'))
+        login_user(get_user_by_email(userinfo_response.json()["email"]))
+        return redirect('/todo')
+    else:
+        return "User email not available or not verified by Google.", 400
 
 
 @app.route('/login', methods=['GET', 'POST'])

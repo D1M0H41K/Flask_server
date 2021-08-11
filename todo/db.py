@@ -23,9 +23,6 @@ class User(db.Model):
     def is_anonymous(self):
         return False
 
-    def default(self, o):
-        return str(o)
-
 
 @login_manager.user_loader
 def user_loader(user_id):
