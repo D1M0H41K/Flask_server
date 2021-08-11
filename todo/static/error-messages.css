@@ -7,6 +7,11 @@ div.error {
     position: fixed;
     min-height: 3em;
     text-align: center;
+    transition: opacity 10s;
+}
+
+div.error:defined {
+    opacity: 0;
 }
 
 div.error p.message{

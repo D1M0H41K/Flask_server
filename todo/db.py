@@ -1,37 +1,26 @@
-from sqlalchemy import desc, func
+from sqlalchemy import func
+from flask_login import UserMixin
 from wtforms import Form, StringField, validators, PasswordField
 from . import db, login_manager
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True)
     login = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     creating_date = db.Column(db.DateTime, server_default=func.now())
-    authenticated = db.Column(db.Boolean, server_default='0')
-
-    def is_active(self):
-        return True
-
-    def get_id(self):
-        return self.id
-
-    def is_authenticated(self):
-        return self.authenticated
-
-    def is_anonymous(self):
-        return False
+    todos = db.relationship("Todo", backref='user')
 
 
 @login_manager.user_loader
 def user_loader(user_id):
-    return User.query.filter_by(id=user_id).first()
+    return User.query.get(user_id)
 
 
 class RegistrationForm(Form):
-    email = StringField(label="Email:", validators=[validators.Length(min=5, max=90)])
-    login = StringField(label="Login:", validators=[validators.Length(min=4, max=32)])
+    email = StringField(label="Email:", validators=[validators.Length(min=5, max=90), validators.DataRequired()])
+    login = StringField(label="Login:", validators=[validators.Length(min=4, max=32), validators.DataRequired()])
     password = PasswordField(label="Password:", validators=[validators.DataRequired()])
 
 
@@ -65,13 +54,13 @@ def get_user_by_email(user_email):
     return User.query.filter_by(email=user_email).first()
 
 
-def add_todo_to_db(todo_task):
-    db.session.add(todo_task)
+def add_todo_to_db(todo_task, user):
+    user.todos.append(todo_task)
     db.session.commit()
 
 
 def get_todo_by_id(todo_id):
-    return Todo.query.filter_by(id=todo_id).first()
+    return Todo.query.get(todo_id)
 
 
 def commit_db_changes():
@@ -83,5 +72,5 @@ def remove_todo_by_id(todo_id):
     db.session.commit()
 
 
-def get_todo_list(user_id):
-    return Todo.query.order_by(desc(Todo.date)).filter_by(user_id=user_id)
+def get_todo_list(user):
+    return reversed(user.todos)

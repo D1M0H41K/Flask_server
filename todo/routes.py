@@ -1,9 +1,9 @@
 import json
 import os
 import requests
-from flask import request, render_template, redirect, session, flash
+from flask import request, render_template, redirect, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 from . import app, login_manager, openid_config_file_name, client, google_client_id, google_client_secret
 from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list, User, add_user_to_db, get_user_by_login, \
@@ -21,7 +21,7 @@ def remove_todo_db(todo_id):
 
 def add_todo_db(data):
     if 'task' in data and data.get('task') != '':
-        add_todo_to_db(Todo(task=data.get('task'), user_id=session['_user_id']))
+        add_todo_to_db(Todo(task=data.get('task'), user_id=current_user.id), current_user)
 
 
 def update_todo_db(data, todo_id):
@@ -50,13 +50,17 @@ def register_user(data):
                                                                 method=os.environ['HASH_METHOD'],
                                                                 salt_length=int(os.environ['SALT_LENGTH']))))
         else:
-            return flash('Account with given email already exists')
+            flash('Account with given email already exists')
+            return -1
     else:
-        return flash('Account with given login already exists')
+        flash('Account with given login already exists')
+        return -1
 
 
 @app.route('/')
 def hello_world():
+    if current_user.is_authenticated:
+        return redirect('/todo')
     return redirect('/login')
 
 
@@ -110,13 +114,14 @@ def login_main():
     form = LogInForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            session['user_data'] = get_user_data(form)
+            user = get_user_data(form)
+            if user is None:
+                return redirect('/login')
+            login_user(user, remember=True)
+            return redirect('/todo')
         else:
             flash('Not correct data in fields')
-        if '_flashes' in session:
             return redirect('/login')
-        login_user(session['user_data'], remember=True)
-        return redirect('/todo')
     else:
         return render_template('login.html', form=form)
 
@@ -126,12 +131,13 @@ def register_main():
     form = RegistrationForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            register_user(form)
+            if register_user(form) == -1:
+                return redirect('/register')
         else:
             flash('Not correct data in fields')
-        if '_flashes' in session:
             return redirect('/register')
-        return redirect('/login')
+        login_user(get_user_by_login(form.login.data))
+        return redirect('/todo')
     else:
         return render_template('register.html', form=form)
 
@@ -151,13 +157,11 @@ def unauthorized():
 @app.route('/todo', methods=['GET', 'POST'])
 @login_required
 def todo_main():
-    if '_user_id' not in session:
-        return redirect('/login')
     if request.method == 'POST':
         add_todo_db(request.form)
         return redirect('/todo')
     else:
-        todo_list = get_todo_list(session['_user_id'])
+        todo_list = get_todo_list(current_user)
         return render_template('todo.html', todo_list=todo_list)
 
 
