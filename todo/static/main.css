@@ -49,6 +49,10 @@ div.object > p {
     padding-left: 10px;
 }
 
+div.green {
+    background-color: #4a4;
+}
+
 form {
     display: inherit;
     border: 1px solid #ccc;

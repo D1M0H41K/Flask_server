@@ -1,4 +1,7 @@
-from sqlalchemy import func
+import os
+from collections import defaultdict
+
+from sqlalchemy import func, desc
 from flask_login import UserMixin
 from wtforms import Form, StringField, validators, PasswordField
 from . import db, login_manager
@@ -10,7 +13,8 @@ class User(db.Model, UserMixin):
     login = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     creating_date = db.Column(db.DateTime, server_default=func.now())
-    todos = db.relationship("Todo", backref='user')
+    todos = db.relationship("Todo", order_by="desc(Todo.date)", backref='user')
+    integrating_list = defaultdict(object)
 
 
 @login_manager.user_loader
@@ -35,8 +39,12 @@ class Todo(db.Model):
     done = db.Column(db.Boolean, server_default='0')
     date = db.Column(db.DateTime, server_default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    integrated = db.Column(db.Boolean, default=False)
 
-# db.drop_all()
+
+if 'DROP_TABLES' in os.environ:
+    db.drop_all()
+    db.create_all()
 
 
 if not db.engine.table_names():
@@ -75,4 +83,4 @@ def remove_todo_by_id(todo_id):
 
 
 def get_todo_list(user):
-    return reversed(user.todos)
+    return user.todos

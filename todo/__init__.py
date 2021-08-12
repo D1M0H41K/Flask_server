@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -20,5 +21,7 @@ google_client_secret = os.environ['GOOGLE_CLIENT_SECRET']
 client = WebApplicationClient(google_client_id)
 openid_config_file_name = "google_openid_configs.json"
 db = SQLAlchemy(app)
+
+integrate_delay = int(os.environ['INTEGRATE_DELAY'])
 
 from . import routes

@@ -24,9 +24,11 @@
         </div>
 
         <div class="object">
+        <div {% if todo.integrated %} class="green" {% endif %}>
             {% if todo.done %}<b>Done!</b>{% else %}<b>Yet to Complete!</b>{% endif %}
             <p>{{ todo.task }}</p>
             <p>{{ todo.date }}</p>
+        </div>
         </div>
 
     </div>
