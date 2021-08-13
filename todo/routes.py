@@ -50,9 +50,7 @@ def register_user(data):
         if get_user_by_email(data.email.data) is None:
             add_user_to_db(User(email=data.email.data,
                                 login=data.login.data,
-                                password=generate_password_hash(password=data.password.data,
-                                                                method=os.environ['HASH_METHOD'],
-                                                                salt_length=int(os.environ['SALT_LENGTH']))))
+                                password=generate_password_hash(password=data.password.data)))
         else:
             flash('Account with given email already exists')
             return -1
