@@ -1,5 +1,8 @@
-__pycache__
-venv
 .git
 .idea
-todo/static
+
+**/__pycache__
+venv
+
+**/.env
+# todo/static

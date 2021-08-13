@@ -1,8 +1,9 @@
 import os
 
-from sqlalchemy import func
 from flask_login import UserMixin
+from sqlalchemy import func
 from wtforms import Form, StringField, validators, PasswordField
+
 from . import db, login_manager
 
 

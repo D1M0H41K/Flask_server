@@ -1,15 +1,20 @@
 import json
+import logging
 import os
+
 import requests
 from flask import request, render_template, redirect, flash
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import app, login_manager, openid_config_file_name, client, google_client_id, google_client_secret, \
     integrate_delay
 from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list, User, add_user_to_db, get_user_by_login, \
     get_user_by_email, RegistrationForm, LogInForm
 from .flask_celery import integrate
+
+logger = logging.getLogger(__name__)
 
 
 def get_google_config():
@@ -50,9 +55,7 @@ def register_user(data):
         if get_user_by_email(data.email.data) is None:
             add_user_to_db(User(email=data.email.data,
                                 login=data.login.data,
-                                password=generate_password_hash(password=data.password.data,
-                                                                method=os.environ['HASH_METHOD'],
-                                                                salt_length=int(os.environ['SALT_LENGTH']))))
+                                password=generate_password_hash(password=data.password.data)))
         else:
             flash('Account with given email already exists')
             return -1
@@ -161,6 +164,7 @@ def unauthorized():
 @app.route('/todo', methods=['GET', 'POST'])
 @login_required
 def todo_main():
+    logger.info("Log example: Main Endpoint")
     if request.method == 'POST':
         add_todo_db(request.form)
         return redirect('/todo')

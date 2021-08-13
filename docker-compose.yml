@@ -1,46 +1,54 @@
 services:
   db:
-    image: postgres
+    image: postgres:12-alpine
     volumes:
       - postgres_db_todo:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=flask
       - POSTGRES_USER=flask
       - POSTGRES_PASSWORD=gunicorn
+
   redis-server:
     image: redis:6-alpine
-    ports:
-      - "6379:6379"
+
   celery:
-    image: python-docker
+    image: python-docker-celery
+    build:
+      context: .
+    env_file: todo/.env
     environment:
       - DATABASE_URL=postgres://flask:gunicorn@db/flask
       - CELERY_BROKER_URL=redis://redis-server
-    command:
-      - celery
-      - -A
-      - todo.flask_celery.celery
-      - worker
+    command: ["celery", "-A", "todo.flask_celery.celery", "worker", "-l", "INFO"]
     depends_on:
       - redis-server
+
   web:
-    image: python-docker
+    # It's the same as celery, but separate image name is easier for compose managing
+    image: python-docker-web
+    build:
+      context: .
     volumes:
       - todo:/tmp
+    env_file: todo/.env
     environment:
-      - DROP_TABLES=true
+#      - DROP_TABLES=true
       - DATABASE_URL=postgres://flask:gunicorn@db/flask
       - CELERY_BROKER_URL=redis://redis-server
     depends_on:
       - db
       - redis-server
+
   nginx:
     image: flask-nginx
+    build:
+      context: .
+      dockerfile: Dockerfile_nginx
     depends_on:
       - web
     ports:
       - "5000:5000"
+
 volumes:
   todo:
-
   postgres_db_todo:
