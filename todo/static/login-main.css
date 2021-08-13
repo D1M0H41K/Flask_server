@@ -1,0 +1,41 @@
+html {
+    background-color: #444;
+}
+
+div.login-holder {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    min-width: 300px;
+    min-height: 400px;
+    padding: 80px;
+}
+
+div.login {
+    border-left: #999 10px solid;
+    border-right: #999 10px solid;
+    border-top: #888 10px solid;
+    border-bottom: #888 15px solid;
+    flex-direction: column;
+    display: inherit;
+    background-color: #bbb;
+    padding: 70px;
+}
+
+input {
+    margin: 3px;
+    display: block;
+}
+
+label {
+    padding: 5px 5px 5px 15px;
+    display: block;
+    margin: 10px;
+    border: #999 1px solid;
+}
+
+input.button {
+    width: calc(100% - 30px);
+    margin: 0px 15px 20px;
+    height: 3em;
+}

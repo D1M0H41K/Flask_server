@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_db_todo:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=flask
+      - POSTGRES_USER=flask
+      - POSTGRES_PASSWORD=gunicorn
+  redis-server:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+  celery:
+    image: python-docker
+    environment:
+      - DATABASE_URL=postgres://flask:gunicorn@db/flask
+      - CELERY_BROKER_URL=redis://redis-server
+    command:
+      - celery
+      - -A
+      - todo.flask_celery.celery
+      - worker
+    depends_on:
+      - redis-server
+  web:
+    image: python-docker
+    volumes:
+      - todo:/tmp
+    environment:
+      - DROP_TABLES=true
+      - DATABASE_URL=postgres://flask:gunicorn@db/flask
+      - CELERY_BROKER_URL=redis://redis-server
+    depends_on:
+      - db
+      - redis-server
+  nginx:
+    image: flask-nginx
+    depends_on:
+      - web
+    ports:
+      - "5000:5000"
+volumes:
+  todo:
+
+  postgres_db_todo:

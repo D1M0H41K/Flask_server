@@ -1,28 +1,81 @@
-import datetime
+import os
 
-from sqlalchemy import desc
-from . import db, app
+from sqlalchemy import func
+from flask_login import UserMixin
+from wtforms import Form, StringField, validators, PasswordField
+from . import db, login_manager
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, unique=True)
+    login = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    creating_date = db.Column(db.DateTime, server_default=func.now())
+    todos = db.relationship("Todo", order_by="desc(Todo.date)", backref='user')
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(user_id)
+
+
+class RegistrationForm(Form):
+    email = StringField(label="Email:", validators=[validators.Length(min=5, max=90), validators.DataRequired()])
+    login = StringField(label="Login:", validators=[validators.Length(min=4, max=32), validators.DataRequired()])
+    password = PasswordField(label="Password:", validators=[validators.DataRequired()])
+
+
+class LogInForm(Form):
+    login = StringField(label="Login:", validators=[validators.DataRequired()])
+    password = PasswordField(label="Password:", validators=[validators.DataRequired()])
 
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    task = db.Column(db.String(120))
-    done = db.Column(db.Boolean)
-    date = db.Column(db.DateTime)
-
-    def __init__(self, task):
-        self.task = task
-        self.done = False
-        self.date = datetime.datetime.now()
+    task = db.Column(db.String(120), nullable=False)
+    done = db.Column(db.Boolean, server_default='0')
+    date = db.Column(db.DateTime, server_default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    integrated = db.Column(db.Boolean, default=False)
 
 
-def add_todo_to_db(todo_task):
-    db.session.add(todo_task)
+if 'DROP_TABLES' in os.environ:
+    del os.environ['DROP_TABLES']
+    db.drop_all()
+    db.create_all()
+
+
+if not db.engine.table_names():
+    db.create_all()
+
+
+def integrate_todo_db(todo_id):
+    todo = get_todo_by_id(todo_id=todo_id)
+    todo.integrated = True
+    db.session.commit()
+
+
+def add_user_to_db(user_data):
+    db.session.add(user_data)
+    db.session.commit()
+
+
+def get_user_by_login(user_login):
+    return User.query.filter_by(login=user_login).first()
+
+
+def get_user_by_email(user_email):
+    return User.query.filter_by(email=user_email).first()
+
+
+def add_todo_to_db(todo_task, user):
+    user.todos.append(todo_task)
     db.session.commit()
 
 
 def get_todo_by_id(todo_id):
-    return Todo.query.filter_by(id=todo_id).first()
+    return Todo.query.get(todo_id)
 
 
 def commit_db_changes():
@@ -34,5 +87,5 @@ def remove_todo_by_id(todo_id):
     db.session.commit()
 
 
-def get_todo_list():
-    return Todo.query.order_by(desc(Todo.date)).all()
+def get_todo_list(user):
+    return user.todos

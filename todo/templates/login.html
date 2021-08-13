@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='error-messages.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login-main.css') }}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="login-holder">
+<div class="login">
+    {% from "_formhelpers.html" import render_input %}
+    <form action="login" method="post">
+        {{ render_input(form.login) }}
+        {{ render_input(form.password) }}
+        <input class="button" type="submit" value="Log in">
+    </form>
+    <form action="register" method="get">
+        <input class="button"  type="submit" value="Register">
+    </form>
+    <form action="login/google" method="get">
+        <input class="button"  type="submit" value="Log in with Google">
+    </form>
+</div>
+</div>
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="error">
+                <p class="message">{{ message }}</p>
+            </div>
+        {% endfor %}
+    {% endwith %}
+</body>
+</html>

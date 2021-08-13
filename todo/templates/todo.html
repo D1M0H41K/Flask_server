@@ -8,10 +8,20 @@
 <body>
 <div class="outer">
     <div class="header">
-        <b>TODO LIST</b><hr>
+        <div class="header-inner">
+            <div class="list-title">
+                <b>TODO LIST</b>
+            </div>
+        <div class="logout-right">
+            <form action="logout">
+                <input type="submit" value="Log out">
+            </form>
+        </div>
+        </div>
+        <hr>
     </div>
     {% for todo in todo_list %}
-    <div class="object-holder">
+    <div class="object-holder {% if not todo.integrated %}not {% endif %}integrated">
 
         <div class="object-left">
             <form action="todo/{{ todo.id }}/update" method="post">
@@ -24,14 +34,16 @@
         </div>
 
         <div class="object">
+        <div {% if todo.integrated %} class="green" {% endif %}>
             {% if todo.done %}<b>Done!</b>{% else %}<b>Yet to Complete!</b>{% endif %}
             <p>{{ todo.task }}</p>
             <p>{{ todo.date }}</p>
         </div>
+        </div>
 
     </div>
     {% endfor %}
-    <div class="add">
+    <div class="object-holder add">
         <form action="todo" method="post">
             <p>Enter task to add task:</p>
             <label>

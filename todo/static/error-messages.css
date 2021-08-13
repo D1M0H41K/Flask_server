@@ -1,0 +1,19 @@
+div.error {
+    opacity: 0.9;
+    background-color: #a11;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: fixed;
+    min-height: 3em;
+    text-align: center;
+    transition: opacity 10s;
+}
+
+div.error:defined {
+    opacity: 0;
+}
+
+div.error p.message{
+    font-size: 1.5em;
+}
