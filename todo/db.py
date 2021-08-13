@@ -53,8 +53,9 @@ if not db.engine.table_names():
 
 def integrate_todo_db(todo_id):
     todo = get_todo_by_id(todo_id=todo_id)
-    todo.integrated = True
-    db.session.commit()
+    if todo is not None:
+        todo.integrated = True
+        db.session.commit()
 
 
 def add_user_to_db(user_data):

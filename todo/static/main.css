@@ -11,9 +11,19 @@ p {
     margin: 0.2em;
 }
 
+div.outer {
+    position: relative;
+    top: 62px;
+}
+
 div.header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 0;
     background-color: #ece;
-    border: 4px solid #555;
+    border-bottom: 4px solid #555;
 }
 
 div.outer {
@@ -30,18 +40,19 @@ div.object-left {
 }
 
 div.logout-right{
-    margin-left: 5px;
+    padding: 0;
     display: flex;
-    border: 1px solid #555;
     width: max-content;
 }
 
 div.list-title{
+    padding: 15px;
     font-size: 2em;
     width: calc(100% - 100px);
 }
 
 div.header-inner{
+    padding: 0;
     display: flex;
 }
 
@@ -86,4 +97,29 @@ form {
     border: 1px solid #ccc;
     padding: 5px;
     width: max-content;
+}
+
+input.logout {
+    border: 0;
+    border-left: 25px solid transparent;
+    border-top: 75px solid #c44;
+    background-color: inherit;
+    width: 200px;
+    height: 25px;
+    padding: 0;
+    margin: 0;
+}
+
+form.clean {
+    padding: 0;
+    border: 0;
+}
+
+p.logout {
+    pointer-events: none;
+    user-select: none;
+    margin-top: 0.5em;
+    margin-left: 45px;
+    font-size: 2em;
+    position: fixed;
 }

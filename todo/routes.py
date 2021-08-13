@@ -30,6 +30,7 @@ def add_todo_db(data):
     if 'task' in data and data.get('task') != '':
         todo = Todo(task=data.get('task'), user_id=current_user.id)
         add_todo_to_db(todo, current_user)
+        logging.info('App: new task with id - %d added, user id - %d', todo.id, todo.user_id)
         integrate.delay(integrate_delay, todo.id)
 
 
@@ -56,6 +57,7 @@ def register_user(data):
             add_user_to_db(User(email=data.email.data,
                                 login=data.login.data,
                                 password=generate_password_hash(password=data.password.data)))
+            logging.info('App: new user registered\n\t - email: %s\n\t - login: %s', data.email.data, data.login.data)
         else:
             flash('Account with given email already exists')
             return -1
@@ -85,6 +87,7 @@ def login_google():
 
 @app.route('/login/google/callback')
 def login_google_callback():
+    logging.info('App: google callback')
     code = request.args.get("code")
     google_conf = get_google_config()
     token_endpoint = google_conf['token_endpoint']
@@ -111,6 +114,7 @@ def login_google_callback():
                                 login=userinfo_response.json()["given_name"],
                                 password='google'))
         login_user(get_user_by_email(userinfo_response.json()["email"]))
+        logging.info('App: user logged in using google, user id - %d', current_user.id)
         return redirect('/todo')
     else:
         return "User email not available or not verified by Google.", 400
@@ -125,6 +129,7 @@ def login_main():
             if user is None:
                 return redirect('/login')
             login_user(user, remember=True)
+            logging.info('App: user %s logged in', current_user.login)
             return redirect('/todo')
         else:
             flash('Not correct data in fields')
@@ -152,19 +157,21 @@ def register_main():
 @app.route('/logout')
 @login_required
 def logout():
+    logging.info('App: user %s going to log out', current_user.login)
     logout_user()
     return redirect('/')
 
 
 @login_manager.unauthorized_handler
 def unauthorized():
+    logging.info('App: unauthorized user handler')
     return redirect('/login')
 
 
 @app.route('/todo', methods=['GET', 'POST'])
 @login_required
 def todo_main():
-    logger.info("Log example: Main Endpoint")
+    logging.info('App: main, user id - %d', current_user.id)
     if request.method == 'POST':
         add_todo_db(request.form)
         return redirect('/todo')
@@ -176,6 +183,7 @@ def todo_main():
 @app.route('/todo/<todo_id>/update', methods=['POST'])
 @login_required
 def todo_update(todo_id=None):
+    logging.info('App: update, user id - %d', current_user.id)
     update_todo_db(request.form, int(todo_id))
     return redirect('/todo')
 
@@ -183,5 +191,6 @@ def todo_update(todo_id=None):
 @app.route('/todo/<todo_id>/delete', methods=['POST'])
 @login_required
 def todo_remove(todo_id=None):
+    logging.info('App: remove, user id - %d', current_user.id)
     remove_todo_db(int(todo_id))
     return redirect('/todo')
