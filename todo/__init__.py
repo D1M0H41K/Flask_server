@@ -1,10 +1,17 @@
 import os
+import logging
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from dotenv import load_dotenv
+from flask import Flask
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 from oauthlib.oauth2 import WebApplicationClient
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)20s:%(lineno)3d - %(levelname)-8s: %(message)s",
+    level=logging.DEBUG,
+)
 
 
 load_dotenv()
