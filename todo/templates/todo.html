@@ -23,15 +23,6 @@
     {% for todo in todo_list %}
     <div class="object-holder {% if not todo.integrated %}not {% endif %}integrated">
 
-        <div class="object-left">
-            <form action="todo/{{ todo.id }}/update" method="post">
-                <input type="submit" name="done" value="{% if todo.done %}Uncomplete{% else %}Complete{% endif %}">
-            </form>
-
-            <form action="todo/{{ todo.id }}/delete" method="post">
-                <input type="submit" name="delete" value="delete">
-            </form>
-        </div>
 
         <div class="object">
         <div {% if todo.integrated %} class="green" {% endif %}>
@@ -40,6 +31,16 @@
             <p>{{ todo.date }}</p>
         </div>
         </div>
+
+            <form class="clean" action="todo/{{ todo.id }}/update" method="post">
+                <input class="complete" type="submit" name="done" value="{% if todo.done %}Uncomplete{% else %}Complete{% endif %}">
+                <p class="complete">{% if todo.done %}Uncomplete{% else %}Complete{% endif %}</p>
+            </form>
+
+            <form class="clean" action="todo/{{ todo.id }}/delete" method="post">
+                <input class="delete" type="submit" name="delete" value="delete">
+                <p class="delete">Delete</p>
+            </form>
 
     </div>
     {% endfor %}

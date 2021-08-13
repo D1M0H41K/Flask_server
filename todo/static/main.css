@@ -1,10 +1,10 @@
 html {
     background-color: #eee;
-    min-width: 600px;
+    min-width: 700px;
 }
 
 div {
-    padding: 5px;
+    padding: 0;
 }
 
 p {
@@ -13,7 +13,7 @@ p {
 
 div.outer {
     position: relative;
-    top: 62px;
+    top: 64px;
 }
 
 div.header {
@@ -24,6 +24,7 @@ div.header {
     padding: 0;
     background-color: #ece;
     border-bottom: 4px solid #555;
+    z-index: 1000;
 }
 
 div.outer {
@@ -62,10 +63,9 @@ input {
 }
 
 div.object-holder {
+    min-height: 75px;
     display: flex;
     overflow: hidden;
-    padding-left: 10px;
-    padding-bottom: 5px;
     border-left: 5px solid #555;
     border-bottom: 5px solid #555;
     border-right: 5px solid #555;
@@ -110,6 +110,34 @@ input.logout {
     margin: 0;
 }
 
+input.complete {
+    position: absolute;
+    border: 0;
+    border-left: 25px solid transparent;
+    border-top: 76px solid #ccc;
+    background-color: inherit;
+    width: 240px;
+    height: 25px;
+    padding: 0;
+    margin: 0;
+    right: 129px;
+    z-index: 1;
+}
+
+input.delete {
+    position: absolute;
+    border: 0;
+    border-left: 25px solid transparent;
+    border-top: 76px solid #622;
+    background-color: inherit;
+    width: 150px;
+    height: 25px;
+    margin: 0 0 0 0;
+    right: 4px;
+    z-index: 1;
+    padding: 0;
+}
+
 form.clean {
     padding: 0;
     border: 0;
@@ -119,7 +147,32 @@ p.logout {
     pointer-events: none;
     user-select: none;
     margin-top: 0.5em;
-    margin-left: 45px;
+    margin-left: 55px;
     font-size: 2em;
     position: fixed;
+}
+
+p.delete {
+    pointer-events: none;
+    user-select: none;
+    margin: 0.5em 0 0 0;
+    font-size: 2em;
+    right: 30px;
+    position: absolute;
+    z-index: 2;
+}
+
+p.complete {
+    pointer-events: none;
+    user-select: none;
+    margin: 0.5em 0 0 0;
+    right: 180px;
+    font-size: 2em;
+    position: absolute;
+    z-index: 2;
+}
+
+div.object {
+    padding: 5px 0 0 5px;
+    width: 300px;
 }
