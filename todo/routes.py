@@ -1,7 +1,6 @@
 import json
 import os
 import requests
-from celery.result import AsyncResult
 from flask import request, render_template, redirect, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
@@ -26,7 +25,7 @@ def add_todo_db(data):
     if 'task' in data and data.get('task') != '':
         todo = Todo(task=data.get('task'), user_id=current_user.id)
         add_todo_to_db(todo, current_user)
-        current_user.integrating_list[todo.id] = integrate.delay(integrate_delay)
+        integrate.delay(integrate_delay, todo.id)
 
 
 def update_todo_db(data, todo_id):
@@ -167,12 +166,6 @@ def todo_main():
         return redirect('/todo')
     else:
         todo_list = get_todo_list(current_user)
-        for todo_id in list(current_user.integrating_list.keys()):
-            task = current_user.integrating_list[todo_id]
-            if task.state == 'SUCCESS':
-                get_todo_by_id(todo_id).integrated = task.wait(timeout=0)
-                del current_user.integrating_list[todo_id]
-                commit_db_changes()
         return render_template('todo.html', todo_list=todo_list)
 
 

@@ -14,8 +14,8 @@ services:
   celery:
     image: python-docker
     environment:
+      - DATABASE_URL=postgres://flask:gunicorn@db/flask
       - CELERY_BROKER_URL=redis://redis-server
-      - CELERY_RESULT_BACKEND=redis://redis-server
     command:
       - celery
       - -A
@@ -31,7 +31,6 @@ services:
       - DROP_TABLES=true
       - DATABASE_URL=postgres://flask:gunicorn@db/flask
       - CELERY_BROKER_URL=redis://redis-server
-      - CELERY_RESULT_BACKEND=redis://redis-server
     depends_on:
       - db
       - redis-server

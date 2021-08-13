@@ -1,7 +1,6 @@
 import os
-from collections import defaultdict
 
-from sqlalchemy import func, desc
+from sqlalchemy import func
 from flask_login import UserMixin
 from wtforms import Form, StringField, validators, PasswordField
 from . import db, login_manager
@@ -14,7 +13,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String, nullable=False)
     creating_date = db.Column(db.DateTime, server_default=func.now())
     todos = db.relationship("Todo", order_by="desc(Todo.date)", backref='user')
-    integrating_list = defaultdict(object)
 
 
 @login_manager.user_loader
@@ -43,12 +41,19 @@ class Todo(db.Model):
 
 
 if 'DROP_TABLES' in os.environ:
+    del os.environ['DROP_TABLES']
     db.drop_all()
     db.create_all()
 
 
 if not db.engine.table_names():
     db.create_all()
+
+
+def integrate_todo_db(todo_id):
+    todo = get_todo_by_id(todo_id=todo_id)
+    todo.integrated = True
+    db.session.commit()
 
 
 def add_user_to_db(user_data):

@@ -1,4 +1,7 @@
+import os
+
 from celery import Celery
+from .db import integrate_todo_db
 from . import app
 
 import time
@@ -7,7 +10,6 @@ import time
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
         broker=app.config['CELERY_BROKER_URL']
     )
     celery.conf.update(app.config)
@@ -22,13 +24,13 @@ def make_celery(app):
 
 
 app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379',
-    CELERY_RESULT_BACKEND='redis://localhost:6379'
+    CELERY_BROKER_URL=os.environ['CELERY_BROKER_URL']
 )
 celery = make_celery(app)
 
 
 @celery.task()
-def integrate(sleep_time):
+def integrate(sleep_time, todo_id):
     time.sleep(sleep_time)
-    return True
+    integrate_todo_db(todo_id=todo_id)
+
