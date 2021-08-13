@@ -1,9 +1,11 @@
 import json
 import os
+
 import requests
 from flask import request, render_template, redirect, flash
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import app, login_manager, openid_config_file_name, client, google_client_id, google_client_secret, \
     integrate_delay
 from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \

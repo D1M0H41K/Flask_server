@@ -1,10 +1,10 @@
 import os
+import time
 
 from celery import Celery
-from .db import integrate_todo_db
-from . import app
 
-import time
+from . import app
+from .db import integrate_todo_db
 
 
 def make_celery(app):
@@ -33,4 +33,3 @@ celery = make_celery(app)
 def integrate(sleep_time, todo_id):
     time.sleep(sleep_time)
     integrate_todo_db(todo_id=todo_id)
-
