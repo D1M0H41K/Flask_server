@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import requests
@@ -12,6 +13,8 @@ from .db import Todo, remove_todo_by_id, add_todo_to_db, get_todo_by_id, \
     commit_db_changes, get_todo_list, User, add_user_to_db, get_user_by_login, \
     get_user_by_email, RegistrationForm, LogInForm
 from .flask_celery import integrate
+
+logger = logging.getLogger(__name__)
 
 
 def get_google_config():
@@ -161,6 +164,7 @@ def unauthorized():
 @app.route('/todo', methods=['GET', 'POST'])
 @login_required
 def todo_main():
+    logger.info("Log example: Main Endpoint")
     if request.method == 'POST':
         add_todo_db(request.form)
         return redirect('/todo')
